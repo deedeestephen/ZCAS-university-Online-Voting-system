@@ -1,0 +1,8 @@
+{
+  "name": "Remix: ZCAS Voting System",
+  "description": "Secure college voting system with student verification and admin dashboard",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": []
+}

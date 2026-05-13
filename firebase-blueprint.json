@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "student": {
+      "title": "Student",
+      "description": "A student voter",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "phoneVerified": { "type": "boolean" },
+        "isVerified": { "type": "boolean" },
+        "hasVoted": { "type": "boolean" },
+        "currentVotingPosition": { "type": "string" },
+        "idUrl": { "type": "string" },
+        "selfieUrl": { "type": "string" },
+        "status": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["studentId", "name", "email", "uid"]
+    },
+    "candidate": {
+      "title": "Candidate",
+      "description": "A candidate running for election",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "position": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "faculty": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["name", "position"]
+    },
+    "vote": {
+      "title": "Vote",
+      "description": "A vote cast by a student",
+      "type": "object",
+      "properties": {
+        "voterId": { "type": "string" },
+        "position": { "type": "string" },
+        "candidateId": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["voterId", "position", "candidateId", "timestamp"]
+    },
+    "receipt": {
+      "title": "Vote Receipt",
+      "description": "An immutable cryptographic receipt of a cast vote.",
+      "type": "object",
+      "properties": {
+        "voterId": { "type": "string" },
+        "receiptId": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "hash": { "type": "string" }
+      },
+      "required": ["voterId", "receiptId", "timestamp", "hash"]
+    },
+    "adminUser": {
+      "title": "Admin User",
+      "description": "An administrator",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": { "$ref": "#/entities/student" },
+      "description": "Student records."
+    },
+    "/candidates/{candidateId}": {
+      "schema": { "$ref": "#/entities/candidate" },
+      "description": "Election candidates."
+    },
+    "/votes/{voteId}": {
+      "schema": { "$ref": "#/entities/vote" },
+      "description": "Submitted votes (anonymous/linked to voterId to ensure one vote per position)."
+    },
+    "/receipts/{receiptId}": {
+      "schema": { "$ref": "#/entities/receipt" },
+      "description": "Immutable cryptographic receipts of cast votes."
+    },
+    "/adminUsers/{uid}": {
+      "schema": { "$ref": "#/entities/adminUser" },
+      "description": "Admin access control records."
+    }
+  }
+}

@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid)) || 
+        request.auth.token.email == 'admin@zcas.edu.zm'
+      );
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    match /adminUsers/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if false; // Only configured out of band
+    }
+
+    match /students/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      
+      allow create: if isOwner(uid) 
+        && incoming().keys().hasAll(['studentId', 'name', 'email', 'uid', 'isVerified', 'hasVoted', 'createdAt'])
+        && incoming().uid == uid
+        && incoming().isVerified == false
+        && incoming().hasVoted == false
+        && incoming().createdAt == request.time;
+        
+      allow update: if isOwner(uid) && (
+        (incoming().diff(existing()).affectedKeys().hasOnly(['phone', 'phoneVerified', 'updatedAt', 'status']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['idUrl', 'updatedAt', 'status']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['selfieUrl', 'updatedAt', 'status', 'smileVerificationResult']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['idUrl', 'selfieUrl', 'updatedAt', 'status', 'smileVerificationResult']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['currentVotingPosition', 'updatedAt']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['hasVoted', 'updatedAt']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['currentVotingPosition', 'hasVoted', 'updatedAt']) && incoming().updatedAt == request.time) ||
+        (incoming().diff(existing()).affectedKeys().hasOnly(['status', 'isVerified', 'adminNotes', 'updatedAt']) && incoming().updatedAt == request.time)
+      );
+
+      allow update: if isAdmin();
+      allow list: if isAdmin();
+    }
+
+    match /candidates/{candidateId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /votes/{voteId} {
+      allow read: if isAdmin() || (isSignedIn() && existing().voterId == request.auth.uid);
+      allow list: if isAdmin() || (isSignedIn() && resource.data.voterId == request.auth.uid);
+      
+      allow create: if isSignedIn()
+        && incoming().keys().hasAll(['voterId', 'position', 'candidateId', 'timestamp'])
+        && incoming().voterId == request.auth.uid
+        && incoming().timestamp == request.time;
+        
+      allow update: if isSignedIn() 
+        && existing().voterId == request.auth.uid
+        && incoming().diff(existing()).affectedKeys().hasOnly(['candidateId', 'timestamp'])
+        && incoming().timestamp == request.time;
+    }
+
+    match /receipts/{receiptId} {
+      // Allow only the owner to read/list their receipt
+      allow read, list: if isSignedIn() && resource.data.voterId == request.auth.uid;
+      
+      // Allow creation during the final phase of voting
+      allow create: if isSignedIn()
+        && incoming().keys().hasAll(['voterId', 'receiptId', 'hash', 'timestamp'])
+        && incoming().voterId == request.auth.uid
+        && incoming().receiptId == receiptId
+        && incoming().timestamp == request.time;
+      
+      // Receipts are strictly immutable
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
