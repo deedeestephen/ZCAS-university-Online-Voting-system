@@ -30,9 +30,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       if (currentUser) {
         try {
-          // Check if admin
-          const adminDoc = await getDoc(doc(db, 'adminUsers', currentUser.uid));
-          if (adminDoc.exists() || currentUser.email === 'admin@zcas.edu.zm') {
+          if (currentUser.email === 'admin@zcas.edu.zm') {
+            setIsAdmin(true);
+            setLoading(false);
+            try {
+               const { setDoc, serverTimestamp } = await import('firebase/firestore');
+               await setDoc(doc(db, 'adminUsers', currentUser.uid), {
+                   email: currentUser.email,
+                   role: 'admin',
+                   createdAt: serverTimestamp()
+               }, { merge: true });
+            } catch (e) {
+               console.error("Could not write adminUsers doc", e);
+            }
+            return;
+          }
+          
+          let adminExists = false;
+          try {
+              const adminDoc = await getDoc(doc(db, 'adminUsers', currentUser.uid));
+              adminExists = adminDoc.exists();
+          } catch (e) {
+              console.warn("Could not read adminUsers document - assuming not admin", e);
+          }
+
+          if (adminExists) {
             setIsAdmin(true);
           } else {
             setIsAdmin(false);
@@ -44,11 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } catch (error) {
           console.error("AuthContext fetch error:", error);
-          if (currentUser.email === 'admin@zcas.edu.zm') {
-              setIsAdmin(true);
-          } else {
-              setIsAdmin(false);
-          }
+          setIsAdmin(false);
         }
       } else {
         setUserData(null);

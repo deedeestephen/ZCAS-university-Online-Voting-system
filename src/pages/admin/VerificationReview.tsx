@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { collection, onSnapshot, doc, updateDoc, query, where, serverTimestamp } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '../../lib/firebase';
 import { db } from '../../lib/firebase';
 import toast from 'react-hot-toast';
 
@@ -14,6 +15,8 @@ export default function VerificationReview() {
     const unsub = onSnapshot(q, (snap) => {
         setStudents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         setCurrentIndex(0);
+    }, (error) => {
+        handleFirestoreError(error, OperationType.GET, 'students');
     });
     return unsub;
   }, []);
@@ -31,8 +34,28 @@ export default function VerificationReview() {
         });
         toast.success(`Student ${status}`);
         setAdminNotes('');
+
+        if (student.phoneNumber) {
+            try {
+              const res = await fetch('/api/sms/notify-verification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  phoneNumber: student.phoneNumber,
+                  status,
+                  studentName: student.name || student.fullName
+                })
+              });
+              if (!res.ok) {
+                 console.warn("SMS notification might have failed:", await res.text());
+              }
+            } catch (smsErr) {
+              console.error("SMS error:", smsErr);
+            }
+        }
     } catch (err: any) {
         toast.error('Error: ' + err.message);
+        handleFirestoreError(err, OperationType.UPDATE, `students/${student.id}`);
     }
   };
 

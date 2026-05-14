@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { auth } from '../../lib/firebase';
+import { db, auth, handleFirestoreError, OperationType } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
+import { doc, onSnapshot } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
 const POSITIONS = [
@@ -18,11 +19,23 @@ const POSITIONS = [
 export default function StudentDashboard() {
   const { userData } = useAuth();
   const navigate = useNavigate();
+  const [electionSchedule, setElectionSchedule] = useState<{startTime: string, endTime: string} | null>(null);
 
   const isVerified = userData?.isVerified;
   const status = userData?.status;
   const hasVoted = userData?.hasVoted;
   const currentPos = userData?.currentVotingPosition || POSITIONS[0];
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'settings', 'electionSchedule'), (docSnap) => {
+      if (docSnap.exists()) {
+        setElectionSchedule(docSnap.data() as any);
+      }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'settings/electionSchedule');
+    });
+    return unsub;
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -32,6 +45,34 @@ export default function StudentDashboard() {
     } catch (error) {
       toast.error('Failed to log out');
     }
+  };
+
+  const isVotingOpen = () => {
+    if (!electionSchedule || !electionSchedule.startTime || !electionSchedule.endTime) return true; // Default open if not set
+    const now = new Date();
+    const start = new Date(electionSchedule.startTime);
+    const end = new Date(electionSchedule.endTime);
+    return now >= start && now <= end;
+  };
+
+  const getVotingStatusMessage = () => {
+    if (hasVoted) return 'Thank you for participating.';
+    if (!isVerified) {
+       return status === 'rejected' ? 'Your identity verification was rejected. Please retry.' : 'Please complete your identity verification.';
+    }
+    if (!electionSchedule || !electionSchedule.startTime || !electionSchedule.endTime) return 'Polls are open. Your vote matters.';
+    
+    const now = new Date();
+    const start = new Date(electionSchedule.startTime);
+    const end = new Date(electionSchedule.endTime);
+    
+    if (now < start) {
+       return `Voting opens on ${start.toLocaleString()}`;
+    }
+    if (now > end) {
+       return 'Voting has closed.';
+    }
+    return `Polls are open until ${end.toLocaleString()}`;
   };
 
   const startVoting = () => {
@@ -73,21 +114,21 @@ export default function StudentDashboard() {
           <div className="flex flex-col gap-2 z-10">
             <div className="flex items-center gap-2 mb-1">
               <span className="relative flex h-3 w-3">
-                {isVerified && !hasVoted && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>}
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${isVerified && !hasVoted ? 'bg-secondary' : 'bg-outline'}`}></span>
+                {isVerified && !hasVoted && isVotingOpen() && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>}
+                <span className={`relative inline-flex rounded-full h-3 w-3 ${isVerified && !hasVoted && isVotingOpen() ? 'bg-secondary' : 'bg-outline'}`}></span>
               </span>
-              <span className={`font-label text-sm font-bold uppercase tracking-wider ${isVerified && !hasVoted ? 'text-secondary' : 'text-outline'}`}>
-                {hasVoted ? 'Vote Submitted' : (isVerified ? 'Live Now' : status === 'rejected' ? 'Verification Rejected' : 'Pending Verification')}
+              <span className={`font-label text-sm font-bold uppercase tracking-wider ${isVerified && !hasVoted && isVotingOpen() ? 'text-secondary' : 'text-outline'}`}>
+                {hasVoted ? 'Vote Submitted' : (isVerified ? (isVotingOpen() ? 'Live Now' : 'Voting Closed') : status === 'rejected' ? 'Verification Rejected' : 'Pending Verification')}
               </span>
             </div>
             <h2 className="font-headline font-bold text-2xl md:text-3xl text-on-surface">2024 SRC Elections</h2>
             <p className="text-on-surface-variant font-body">
-              {hasVoted ? 'Thank you for participating.' : (isVerified ? 'Polls are open. Your vote matters.' : status === 'rejected' ? 'Your identity verification was rejected. Please retry.' : 'Please complete your identity verification.')}
+              {getVotingStatusMessage()}
             </p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto z-10">
-            {isVerified && !hasVoted && (
+            {isVerified && !hasVoted && isVotingOpen() && (
                 <button onClick={startVoting} className="bg-primary text-on-primary hover:brightness-110 active:scale-[0.98] transition-all px-8 py-4 rounded-lg font-label font-semibold flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto">
                     <span className="material-symbols-outlined">how_to_vote</span>
                     Cast Your Vote

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { collection, query, where, getDocs, addDoc, updateDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, updateDoc, doc, serverTimestamp, setDoc, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '../../lib/firebase';
+import { handleFirestoreError, OperationType } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import SHA256 from 'crypto-js/sha256';
@@ -40,6 +41,23 @@ export default function VotingPage() {
         return;
     }
 
+    const unsubSettings = onSnapshot(doc(db, 'settings', 'electionSchedule'), (docSnap) => {
+        if (docSnap.exists()) {
+            const sched = docSnap.data();
+            if (sched.startTime && sched.endTime) {
+                const now = new Date();
+                const start = new Date(sched.startTime);
+                const end = new Date(sched.endTime);
+                if (now < start || now > end) {
+                    toast.error('Voting is currently closed.');
+                    navigate('/dashboard');
+                }
+            }
+        }
+    }, (error) => {
+        handleFirestoreError(error, OperationType.GET, 'settings/electionSchedule');
+    });
+
     const fetchCandidatesAndVote = async () => {
         setLoading(true);
         try {
@@ -61,11 +79,13 @@ export default function VotingPage() {
 
         } catch(err: any) {
             toast.error("Failed to load candidates");
+            handleFirestoreError(err, OperationType.GET, 'candidates');
         } finally {
             setLoading(false);
         }
     };
     fetchCandidatesAndVote();
+    return () => unsubSettings();
   }, [currentPosName, userData]);
 
   const handleVote = async () => {
@@ -134,6 +154,7 @@ export default function VotingPage() {
         }
     } catch (err: any) {
         toast.error('Failed to submit vote: ' + err.message);
+        handleFirestoreError(err, OperationType.WRITE, 'votes');
     } finally {
         setSubmitting(false);
     }

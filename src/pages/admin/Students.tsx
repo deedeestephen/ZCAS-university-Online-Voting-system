@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import AdminLayout from './AdminLayout';
 import { collection, onSnapshot, doc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import { handleFirestoreError, OperationType } from '../../lib/firebase';
 import toast from 'react-hot-toast';
 
 export default function ManageStudents() {
@@ -22,6 +23,8 @@ export default function ManageStudents() {
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'students'), (snap) => {
         setStudents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+        handleFirestoreError(error, OperationType.GET, 'students');
     });
     return unsub;
   }, []);
@@ -32,6 +35,7 @@ export default function ManageStudents() {
           toast.success('Student deleted successfully');
       } catch (err: any) {
           toast.error(err.message);
+          handleFirestoreError(err, OperationType.DELETE, `students/${id}`);
       } finally {
           setDeletingId(null);
       }
@@ -87,6 +91,7 @@ export default function ManageStudents() {
         resetForm();
     } catch (err: any) {
         toast.error(err.message);
+        handleFirestoreError(err, OperationType.WRITE, 'students');
     } finally {
         setLoading(false);
     }

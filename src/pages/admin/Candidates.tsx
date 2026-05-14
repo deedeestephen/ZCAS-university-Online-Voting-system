@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from './AdminLayout';
 import { collection, onSnapshot, doc, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '../../lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../lib/firebase';
 import toast from 'react-hot-toast';
@@ -22,6 +23,8 @@ export default function ManageCandidates() {
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'candidates'), (snap) => {
         setCandidates(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+        handleFirestoreError(error, OperationType.GET, 'candidates');
     });
     return unsub;
   }, []);
@@ -32,6 +35,7 @@ export default function ManageCandidates() {
           toast.success('Candidate deleted');
       } catch (err: any) {
           toast.error(err.message);
+          handleFirestoreError(err, OperationType.DELETE, `candidates/${id}`);
       } finally {
           setDeletingId(null);
       }
@@ -93,6 +97,7 @@ export default function ManageCandidates() {
         resetForm();
     } catch (err: any) {
         toast.error('Error: ' + err.message);
+        handleFirestoreError(err, OperationType.WRITE, 'candidates');
     } finally {
         setLoading(false);
     }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../lib/firebase';
 import toast from 'react-hot-toast';
@@ -11,33 +11,129 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetting, setResetting] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      let loginEmail = studentId.trim();
-      
-      // If it doesn't look like an email, assume it's a student ID and construct the email
-      if (!loginEmail.includes('@')) {
-          // Admin can use 'admin' as shorthand
-          if (loginEmail.toLowerCase() === 'admin') {
-              loginEmail = 'admin@zcas.edu.zm';
-          } else {
-              loginEmail = loginEmail.toLowerCase() + '@zcas.edu.zm';
-          }
-      }
+    let loginEmail = studentId.trim();
+    
+    // If it doesn't look like an email, assume it's a student ID and construct the email
+    if (!loginEmail.includes('@')) {
+        // Admin can use 'admin' as shorthand
+        if (loginEmail.toLowerCase() === 'admin') {
+            loginEmail = 'admin@zcas.edu.zm';
+        } else {
+            loginEmail = loginEmail.toLowerCase() + '@zcas.edu.zm';
+        }
+    }
 
+    try {
       await signInWithEmailAndPassword(auth, loginEmail, password);
       toast.success('Logged in successfully');
-      navigate('/dashboard');
+      navigate(loginEmail === 'admin@zcas.edu.zm' ? '/admin' : '/dashboard');
     } catch (err: any) {
-      toast.error(err.message || 'Login failed');
+      if (loginEmail === 'admin@zcas.edu.zm' && err.code === 'auth/invalid-credential') {
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, loginEmail, password);
+            // Create the admin user doc so they have rules permissions
+            try {
+               await (await import('firebase/firestore')).setDoc((await import('firebase/firestore')).doc(db, 'adminUsers', userCred.user.uid), {
+                   email: loginEmail,
+                   role: 'admin',
+                   createdAt: (await import('firebase/firestore')).serverTimestamp()
+               });
+            } catch (e) {
+               console.error("Failed to write to adminUsers", e);
+            }
+            toast.success('Admin account initialized successfully');
+            navigate('/admin');
+        } catch (createErr: any) {
+            toast.error(createErr.message || 'Admin setup failed');
+        }
+      } else {
+        toast.error(err.message || 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail.trim()) {
+      toast.error('Please enter your email or Student ID');
+      return;
+    }
+
+    setResetting(true);
+    let targetEmail = resetEmail.trim();
+    if (!targetEmail.includes('@')) {
+      targetEmail = targetEmail.toLowerCase() + '@zcas.edu.zm';
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, targetEmail);
+      toast.success('Password reset email sent! Please check your inbox.');
+      setIsForgotPassword(false);
+      setResetEmail('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send reset email');
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  if (isForgotPassword) {
+    return (
+      <main className="w-full min-h-[100dvh] bg-surface-container-lowest flex items-center justify-center p-4 py-8 md:py-12">
+        <div className="w-full max-w-lg bg-surface flex flex-col p-8 sm:p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-surface-variant">
+          <div className="mb-8">
+            <h2 className="font-display font-bold text-2xl text-on-background tracking-tight mb-2">Reset Password</h2>
+            <p className="font-body text-on-surface-variant text-sm">Enter your Student ID or email, and we'll send you a link to reset your password.</p>
+          </div>
+
+          <form onSubmit={handleForgotPassword} className="space-y-6">
+            <div>
+              <label className="block font-label font-semibold text-sm text-on-surface mb-2 tracking-wide" htmlFor="resetEmail">Student ID or Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span className="material-symbols-outlined text-outline">email</span>
+                </div>
+                <input 
+                  type="text" 
+                  id="resetEmail" 
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  className="block w-full pl-11 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:border-primary transition-colors font-body sm:text-sm" 
+                  placeholder="ID or Email" 
+                  required 
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 flex flex-col sm:flex-row gap-3">
+              <button disabled={resetting} type="submit" className="w-full flex justify-center items-center gap-2 bg-primary-container text-on-primary py-3.5 px-4 rounded-lg font-label font-bold text-[15px] shadow-sm hover:brightness-110 active:scale-[0.98] transition-all duration-200">
+                {resetting ? 'Sending...' : 'Send Reset Link'}
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setIsForgotPassword(false)}
+                className="w-full flex justify-center items-center py-3.5 px-4 rounded-lg font-label font-semibold text-on-surface hover:bg-surface-variant transition-colors"
+              >
+                Back to Login
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="w-full min-h-[100dvh] bg-surface-container-lowest flex items-center justify-center p-4 py-8 md:py-12">
@@ -124,6 +220,14 @@ export default function Login() {
                   Remember me
                 </label>
               </div>
+              <button 
+                type="button" 
+                onClick={() => setIsForgotPassword(true)}
+                className="text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors"
+                tabIndex={-1}
+              >
+                Forgot password?
+              </button>
             </div>
 
             <div className="pt-4">
