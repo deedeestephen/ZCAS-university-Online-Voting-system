@@ -11,11 +11,16 @@ export default function SelfieCapture() {
   const [photoData, setPhotoData] = useState<string | null>(null);
   const [streamActive, setStreamActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const navigate = useNavigate();
 
-  const startCamera = async () => {
+  const startCamera = async (mode = facingMode) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current && videoRef.current.srcObject) {
+         const stream = videoRef.current.srcObject as MediaStream;
+         stream.getTracks().forEach(track => track.stop());
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setStreamActive(true);
@@ -25,14 +30,25 @@ export default function SelfieCapture() {
     }
   };
 
+  const toggleCamera = () => {
+     const newMode = facingMode === 'user' ? 'environment' : 'user';
+     setFacingMode(newMode);
+     startCamera(newMode);
+  };
+
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const context = canvasRef.current.getContext('2d');
       if (context) {
-        canvasRef.current.width = videoRef.current.videoWidth;
-        canvasRef.current.height = videoRef.current.videoHeight;
-        context.drawImage(videoRef.current, 0, 0);
-        const dataUrl = canvasRef.current.toDataURL('image/jpeg');
+        const MAX_WIDTH = 600;
+        let scale = 1;
+        if (videoRef.current.videoWidth > MAX_WIDTH) {
+           scale = MAX_WIDTH / videoRef.current.videoWidth;
+        }
+        canvasRef.current.width = videoRef.current.videoWidth * scale;
+        canvasRef.current.height = videoRef.current.videoHeight * scale;
+        context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+        const dataUrl = canvasRef.current.toDataURL('image/jpeg', 0.6);
         setPhotoData(dataUrl);
         // stop tracks
         const stream = videoRef.current.srcObject as MediaStream;
@@ -52,29 +68,12 @@ export default function SelfieCapture() {
     setLoading(true);
     
     try {
-      let url = '';
-      try {
-        const uploadTask = async () => {
-          const storageRef = ref(storage, `selfies/${auth.currentUser!.uid}`);
-          await uploadString(storageRef, photoData, 'data_url');
-          return await getDownloadURL(storageRef);
-        };
-        
-        url = await Promise.race([
-            uploadTask(),
-            new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-        ]);
-      } catch (uploadErr) {
-        console.warn('Storage upload failed or timed out, using fallback URL for testing.', uploadErr);
-        url = 'https://ui-avatars.com/api/?name=Selfie&background=random';
-      }
-
       const studentDoc = await getDoc(doc(db, 'students', auth.currentUser.uid));
       
       let approvalStatus = 'pending_approval';
 
       await updateDoc(doc(db, 'students', auth.currentUser.uid), {
-        selfieUrl: url,
+        selfieUrl: photoData,
         status: approvalStatus,
         updatedAt: serverTimestamp(),
       });
@@ -157,15 +156,15 @@ export default function SelfieCapture() {
           )}
 
           <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <mask id="face-mask">
-                <rect width="100%" height="100%" fill="white"></rect>
-                <ellipse cx="50%" cy="50%" rx="35%" ry="45%" fill="black"></ellipse>
-              </mask>
-            </defs>
-            <rect width="100%" height="100%" fill="currentColor" className="text-surface-container-highest/80 backdrop-blur-sm" mask="url(#face-mask)"></rect>
             <ellipse cx="50%" cy="50%" rx="35%" ry="45%" fill="none" stroke="currentColor" strokeWidth="3" className="text-secondary opacity-80" strokeDasharray="8 8"></ellipse>
           </svg>
+          
+          {!photoData && (
+             <button onClick={toggleCamera} className="absolute top-4 right-4 p-3 bg-surface-container-lowest/80 backdrop-blur-md rounded-full shadow-md text-on-surface hover:bg-surface-container-lowest transition-colors flex items-center justify-center">
+               <span className="material-symbols-outlined">cameraswitch</span>
+             </button>
+          )}
+
           <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
         </div>
 
@@ -179,24 +178,6 @@ export default function SelfieCapture() {
                <button disabled={loading} onClick={handleSubmit} className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-label font-bold text-on-primary bg-primary hover:bg-primary-container shadow-sm transition-all active:scale-[0.98]">
                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span>
                  {loading ? 'Submitting...' : 'Submit'}
-               </button>
-               <button disabled={loading} onClick={async () => {
-                  setLoading(true);
-                  try {
-                    await updateDoc(doc(db, 'students', auth.currentUser!.uid), {
-                       selfieUrl: 'https://ui-avatars.com/api/?name=Selfie&background=random',
-                       status: 'pending_approval',
-                       updatedAt: serverTimestamp(),
-                    });
-                    toast.success('Bypass (Test): Data submitted!');
-                    navigate('/verify-status');
-                  } catch(e:any) {
-                    toast.error('Bypass failed: ' + e.message);
-                  } finally {
-                    setLoading(false);
-                  }
-               }} className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-label font-bold text-on-surface bg-surface-container-high hover:bg-surface-container-highest transition-all active:scale-[0.98]">
-                 Bypass
                </button>
              </>
           ) : (

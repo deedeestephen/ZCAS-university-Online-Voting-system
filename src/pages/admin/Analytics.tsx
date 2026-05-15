@@ -296,16 +296,16 @@ export default function AdminDashboard() {
                             <div key={candidate.id} className="relative transition-all hover:bg-surface p-2 rounded-lg -mx-2">
                                <div className="flex justify-between items-center mb-2">
                                   <div className="flex items-center gap-3">
-                                     {candidate.photoUrl ? (
-                                         <img src={candidate.photoUrl} alt={candidate.fullName} className="w-10 h-10 rounded-full object-cover border border-outline-variant shadow-sm" />
+                                     {candidate.imageUrl ? (
+                                         <img src={candidate.imageUrl} alt={candidate.name} className="w-10 h-10 rounded-full object-cover border border-outline-variant shadow-sm" />
                                      ) : (
                                          <div className="w-10 h-10 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm border border-outline-variant shadow-sm">
-                                            {candidate.fullName.charAt(0)}
+                                            {candidate.name?.charAt(0) || '?'}
                                          </div>
                                      )}
                                      <div>
-                                        <div className="text-sm font-medium text-on-surface">{candidate.fullName}</div>
-                                        <div className="text-xs text-on-surface-variant">{candidate.program}</div>
+                                        <div className="text-sm font-medium text-on-surface">{candidate.name}</div>
+                                        <div className="text-xs text-on-surface-variant">{candidate.faculty}</div>
                                      </div>
                                   </div>
                                   <div className="text-right">

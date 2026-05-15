@@ -18,6 +18,47 @@ export default function Settings() {
   const [newAdminUid, setNewAdminUid] = useState('');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [newAdminRole, setNewAdminRole] = useState('verifier');
+  const [resetting, setResetting] = useState(false);
+
+  const handleResetElection = async () => {
+    if (!window.confirm("WARNING: This will permanently delete ALL votes and reset the election. Are you absolutely sure?")) return;
+    const confirmText = window.prompt("FINAL WARNING: This action cannot be undone. Type 'RESET' to confirm.");
+    if (confirmText !== 'RESET') return;
+    
+    setResetting(true);
+    try {
+      const snap = await getDocs(collection(db, 'votes'));
+      const batchPromises: Promise<any>[] = [];
+      
+      for(const item of snap.docs) {
+          batchPromises.push( (await import('firebase/firestore')).deleteDoc(item.ref) );
+      }
+
+      const receiptSnap = await getDocs(collection(db, 'receipts'));
+      for(const item of receiptSnap.docs) {
+          batchPromises.push( (await import('firebase/firestore')).deleteDoc(item.ref) );
+      }
+
+      const studentsSnap = await getDocs(collection(db, 'students'));
+      for(const student of studentsSnap.docs) {
+          if (student.data().hasVoted) {
+             batchPromises.push((await import('firebase/firestore')).updateDoc(student.ref, {
+               hasVoted: false,
+               currentVotingPosition: 'President' 
+             }));
+          }
+      }
+
+      await Promise.all(batchPromises);
+
+      toast.success("Election reset successfully. All votes have been cleared.");
+    } catch (e: any) {
+      toast.error("Failed to reset election: " + e.message);
+      console.error(e);
+    } finally {
+      setResetting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -74,8 +115,8 @@ export default function Settings() {
        const phoneNumbers: string[] = [];
        snap.forEach(doc => {
          const data = doc.data();
-         if (data.phoneNumber) {
-           phoneNumbers.push(data.phoneNumber);
+         if (data.phone || data.phoneNumber) {
+           phoneNumbers.push(data.phone || data.phoneNumber);
          }
        });
 
@@ -236,8 +277,11 @@ export default function Settings() {
                         <h4 className="font-semibold text-error">Danger Zone</h4>
                         <p className="text-sm text-on-surface-variant">Reset the voting results and flush all the votes.</p>
                     </div>
-                    <button className="px-4 py-2 bg-error-container text-error rounded-lg font-medium hover:brightness-105 transition-all text-sm">
-                        Reset Election
+                    <button 
+                       onClick={handleResetElection}
+                       disabled={resetting}
+                       className="px-4 py-2 bg-error-container text-error rounded-lg font-medium hover:brightness-105 transition-all text-sm disabled:opacity-50 flex items-center">
+                        {resetting ? 'Resetting...' : 'Reset Election'}
                     </button>
                  </div>
               </div>

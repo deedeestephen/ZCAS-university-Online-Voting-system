@@ -35,13 +35,13 @@ export default function VerificationReview() {
         toast.success(`Student ${status}`);
         setAdminNotes('');
 
-        if (student.phoneNumber) {
+        if (student.phone || student.phoneNumber) {
             try {
               const res = await fetch('/api/sms/notify-verification', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  phoneNumber: student.phoneNumber,
+                  phoneNumber: student.phone || student.phoneNumber,
                   status,
                   studentName: student.name || student.fullName
                 })
