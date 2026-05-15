@@ -50,8 +50,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           try {
               const adminDoc = await getDoc(doc(db, 'adminUsers', currentUser.uid));
               adminExists = adminDoc.exists();
-          } catch (e) {
-              console.warn("Could not read adminUsers document - assuming not admin", e);
+          } catch (e: any) {
+              console.warn("Could not read adminUsers document - assuming not admin", e.message);
           }
 
           if (adminExists) {
@@ -59,9 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           } else {
             setIsAdmin(false);
             // Fetch student data
-            const studentDoc = await getDoc(doc(db, 'students', currentUser.uid));
-            if (studentDoc.exists()) {
-              setUserData(studentDoc.data());
+            try {
+              const studentDoc = await getDoc(doc(db, 'students', currentUser.uid));
+              if (studentDoc.exists()) {
+                setUserData(studentDoc.data());
+              }
+            } catch (studentErr: any) {
+              console.error("AuthContext students fetch error:", studentErr.message);
+              throw studentErr;
             }
           }
         } catch (error) {

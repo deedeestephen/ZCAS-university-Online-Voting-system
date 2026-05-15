@@ -121,7 +121,7 @@ export default function StudentDashboard() {
                 {hasVoted ? 'Vote Submitted' : (isVerified ? (isVotingOpen() ? 'Live Now' : 'Voting Closed') : status === 'rejected' ? 'Verification Rejected' : 'Pending Verification')}
               </span>
             </div>
-            <h2 className="font-headline font-bold text-2xl md:text-3xl text-on-surface">2024 SRC Elections</h2>
+            <h2 className="font-headline font-bold text-2xl md:text-3xl text-on-surface">2026 ZCAS Student Union Council Elections</h2>
             <p className="text-on-surface-variant font-body">
               {getVotingStatusMessage()}
             </p>
@@ -144,12 +144,22 @@ export default function StudentDashboard() {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/30 flex flex-col gap-4 hover:shadow-md transition-shadow group">
-            <div className="h-12 w-12 rounded-full bg-secondary-container/30 text-secondary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+          <div 
+            onClick={() => {
+              if (isVerified) return;
+              if (status === 'rejected') navigate('/upload-id');
+              else if (status === 'pending_otp') navigate('/otp');
+              else if (status === 'pending_id') navigate('/upload-id');
+              else if (status === 'pending_selfie') navigate('/selfie');
+              else if (status === 'pending_approval') navigate('/verify-status');
+            }} 
+            className={`bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/30 flex flex-col gap-4 transition-all duration-300 group ${!isVerified ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1 active:scale-[0.98]' : 'hover:shadow-md'}`}
+          >
+            <div className={`h-12 w-12 rounded-full flex items-center justify-center mb-2 transition-transform ${isVerified ? 'bg-secondary-container/30 text-secondary group-hover:scale-110' : 'bg-primary-container/10 text-primary group-hover:bg-primary group-hover:text-on-primary'}`}>
+              <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: isVerified ? "'FILL' 1" : "" }}>{isVerified ? 'verified_user' : 'pending_actions'}</span>
             </div>
             <div>
-              <h3 className="font-headline font-semibold text-lg text-on-surface mb-1">Verification Status</h3>
+              <h3 className={`font-headline font-semibold text-lg text-on-surface mb-1 ${!isVerified ? 'group-hover:text-primary transition-colors duration-300' : ''}`}>Verification Status</h3>
               <p className="text-on-surface-variant font-body text-sm mb-4">Confirm your eligibility to participate in the current election cycle.</p>
             </div>
             <div className="mt-auto flex items-center justify-between border-t border-outline-variant/50 pt-4">

@@ -14,26 +14,26 @@ async function runTests() {
     },
   });
 
-  const authCtx = testEnv.authenticatedContext('THPN2wjznufJIaoWsmAf8dlvrCH3', { email: 'admin@zcas.edu.zm', email_verified: false });
+  const authCtx = testEnv.authenticatedContext('student123', { email: 'student@zcas.edu.zm', email_verified: false });
 
-  // Test admin checking candidates
   const db = authCtx.firestore();
   
-  console.log("Testing read on candidates...");
+  console.log("Testing read on settings...");
   try {
-     const docRef = db.collection('candidates').doc('any');
+     const docRef = db.collection('settings').doc('electionSchedule');
      await assertSucceeds(docRef.get());
-     console.log("SUCCESS: can read candidate");
+     console.log("SUCCESS: can read settings");
   } catch (e) {
-     console.error("FAIL: cannot read candidate", e);
+     console.error("FAIL: cannot read settings", e);
   }
-
-  console.log("Testing list on candidates...");
+  
+  console.log("Testing read on students...");
   try {
-     await assertSucceeds(db.collection('candidates').get());
-     console.log("SUCCESS: can list candidates");
+     const docRef = db.collection('students').doc('student123');
+     await assertSucceeds(docRef.get());
+     console.log("SUCCESS: can read own student doc");
   } catch (e) {
-     console.error("FAIL: cannot list candidates", e);
+     console.error("FAIL: cannot read own student doc", e);
   }
 }
 

@@ -148,7 +148,7 @@ export default function Login() {
               Democratic.
             </h1>
             <p className="text-primary-fixed font-body text-lg max-w-xs leading-relaxed">
-              The official portal for ZCAS Student Council elections. Your voice, protected by banking-grade security.
+              The official portal for ZCAS Student Union Council elections. Your voice, protected by banking-grade security.
             </p>
           </div>
           <div className="relative z-10 flex items-center gap-3 text-primary-fixed-dim text-sm font-medium">

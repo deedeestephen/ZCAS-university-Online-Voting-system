@@ -79,6 +79,45 @@ export default function OTPVerification() {
     }
   };
 
+  const resendOTP = async () => {
+    if (!auth.currentUser) return;
+    setLoading(true);
+    try {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = undefined;
+      }
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+      });
+      window.recaptchaVerifier = verifier;
+
+      const studentDoc = await (await import('firebase/firestore')).getDoc(doc(db, 'students', auth.currentUser.uid));
+      if (studentDoc.exists()) {
+        let phone = studentDoc.data().phone || '';
+        
+        phone = phone.replace(/\s+/g, '');
+        if (!phone.startsWith('+')) {
+          if (phone.startsWith('0')) {
+            phone = '+260' + phone.substring(1);
+          } else {
+            phone = '+' + phone;
+          }
+        }
+
+        const confirmation = await linkWithPhoneNumber(auth.currentUser, phone, verifier);
+        setConfirmationResult(confirmation);
+        (window as any)._confirmationResult = confirmation;
+        toast.success(`OTP sent to ${phone}`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Failed to resend OTP: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerify = async () => {
     const code = otp.join('');
     if (code.length !== 6) {
@@ -177,7 +216,7 @@ export default function OTPVerification() {
               
               <button 
                  disabled={loading}
-                 onClick={() => window.location.reload()} 
+                 onClick={resendOTP} 
                  className="w-full text-primary font-label font-bold text-sm py-2 hover:underline transition-all flex items-center justify-center gap-1">
                  <span className="material-symbols-outlined text-[16px]">refresh</span>
                  Resend OTP Code

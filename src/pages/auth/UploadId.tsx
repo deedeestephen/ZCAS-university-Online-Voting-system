@@ -100,9 +100,16 @@ export default function UploadId() {
         <label className="bg-surface-container-lowest border-2 border-dashed border-outline-variant rounded-xl p-8 flex flex-col items-center justify-center gap-4 text-center hover:border-primary transition-colors cursor-pointer group shadow-[0_4px_20px_rgba(0,0,0,0.05)] relative overflow-hidden">
           <input type="file" accept="image/jpeg, image/png" onChange={e => setFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
           {file ? (
-            <div className="flex flex-col items-center bg-surface-container p-4 rounded-lg">
-                <span className="material-symbols-outlined text-secondary text-3xl">task</span>
-                <span className="text-sm font-medium mt-2">{file.name}</span>
+            <div className="flex flex-col items-center w-full">
+                <div className="relative w-full max-w-[240px] aspect-video mb-4 rounded-lg overflow-hidden border border-outline-variant shadow-sm">
+                  <img src={URL.createObjectURL(file)} alt="ID Preview" className="w-full h-full object-cover" />
+                  <div className="absolute top-2 right-2 bg-secondary text-on-secondary rounded-full p-1 shadow-sm flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[16px]">check</span>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-secondary text-3xl mb-1">task</span>
+                <span className="text-sm font-medium text-on-surface truncate max-w-[200px]">{file.name}</span>
+                <span className="text-xs text-secondary font-medium mt-1">Ready to upload</span>
             </div>
           ) : (
             <>

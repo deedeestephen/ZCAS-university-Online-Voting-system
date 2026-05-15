@@ -63,9 +63,10 @@ export default function Register() {
         createdAt: serverTimestamp()
       });
 
-      // Setup complete, user is logged in
-      toast.success('Registration successful!');
-      navigate('/dashboard');
+      // Setup complete, sign out so they can log in
+      await signOut(auth);
+      toast.success('Registration successful! Please login.');
+      navigate('/');
 
     } catch (err: any) {
       toast.error(err.message || 'Registration failed');

@@ -39,7 +39,7 @@ export default function VerificationStatus() {
 
   const getMessage = () => {
     if (isRejected) return 'We could not securely verify your identity using the provided document. Please ensure your Student ID is clearly visible, well-lit, and matches our records.';
-    if (isVerified) return 'Your identity has been successfully verified. You are now eligible to participate in the SRC Elections.';
+    if (isVerified) return 'Your identity has been successfully verified. You are now eligible to participate in the ZCAS Student Union Council Elections.';
     return 'Your details have been submitted and are currently being reviewed by an administrator. This usually takes a short while.';
   };
 
@@ -69,6 +69,62 @@ export default function VerificationStatus() {
           <div className={`h-2 w-full ${getStatusColor()}`}></div>
           <div className="p-8 flex flex-col items-center text-center">
             
+            {/* Timeline Progress Indicator */}
+            <div className="w-full mb-8 relative">
+              <div className="absolute top-1/2 left-0 right-0 h-1 bg-surface-variant -translate-y-1/2 z-0 rounded-full"></div>
+              
+              <div className="absolute top-1/2 left-0 h-1 transition-all duration-500 z-0 rounded-full" 
+                   style={{ 
+                     width: isRejected ? '66%' : isVerified ? '100%' : '66%',
+                     backgroundColor: isRejected ? 'var(--color-error)' : isVerified ? 'var(--color-secondary)' : 'var(--color-primary)'
+                   }}>
+              </div>
+
+              <div className="relative z-10 flex justify-between w-full">
+                {/* Step 1: ID & Selfie Uploaded */}
+                <div className="flex flex-col items-center gap-2 bg-surface-container-lowest pb-1">
+                  <div className="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-[16px]">check</span>
+                  </div>
+                  <span className="text-[10px] font-bold text-on-surface uppercase tracking-wider">Submitted</span>
+                </div>
+
+                {/* Step 2: Under Review */}
+                <div className="flex flex-col items-center gap-2 bg-surface-container-lowest pb-1">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
+                    isVerified ? 'bg-secondary text-on-secondary' : 
+                    isRejected ? 'bg-error text-on-error' : 
+                    'bg-primary text-on-primary ring-4 ring-primary/20 animate-pulse'
+                  }`}>
+                    <span className="material-symbols-outlined text-[16px]">
+                      {isVerified ? 'check' : isRejected ? 'close' : 'hourglass_empty'}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                    isRejected ? 'text-error' : isVerified || isPending ? 'text-on-surface' : 'text-on-surface-variant'
+                  }`}>
+                    {isRejected ? 'Rejected' : isVerified ? 'Reviewed' : 'Review'}
+                  </span>
+                </div>
+
+                {/* Step 3: Verified */}
+                <div className="flex flex-col items-center gap-2 bg-surface-container-lowest pb-1">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
+                    isVerified ? 'bg-[#14B8A6] text-white' : 'bg-surface-variant text-on-surface-variant'
+                  }`}>
+                    <span className="material-symbols-outlined text-[16px]">
+                      {isVerified ? 'how_to_vote' : 'verified'}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                    isVerified ? 'text-[#14B8A6]' : 'text-on-surface-variant'
+                  }`}>
+                    Verified
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-sm ring-8 ${getIconContainerColor()}`}>
               <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                 {getIcon()}

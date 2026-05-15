@@ -146,7 +146,14 @@ export default function SelfieCapture() {
           {!photoData ? (
              <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover"></video>
           ) : (
-            <img src={photoData} alt="Captured" className="w-full h-full object-cover" />
+            <div className="relative w-full h-full">
+              <img src={photoData} alt="Captured" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-secondary/10 flex items-center justify-center">
+                 <div className="bg-secondary text-on-secondary rounded-full p-4 shadow-lg animate-bounce">
+                    <span className="material-symbols-outlined text-4xl">check_circle</span>
+                 </div>
+              </div>
+            </div>
           )}
 
           <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
