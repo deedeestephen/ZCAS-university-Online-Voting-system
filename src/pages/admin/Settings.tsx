@@ -183,7 +183,7 @@ export default function Settings() {
 
   return (
     <AdminLayout>
-      <main className="flex-1 p-4 md:p-8 lg:p-10 w-full overflow-y-auto bg-surface-container-low min-h-[calc(100vh-64px)] md:min-h-screen mb-20 md:mb-0">
+      <main className="flex-1 min-h-0 p-4 md:p-8 lg:p-10 w-full overflow-y-auto bg-surface-container-low mb-20 md:mb-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8">
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-surface-variant transition-colors active:scale-95 duration-200 rounded-full flex items-center justify-center text-on-surface-variant">
             <span className="material-symbols-outlined">arrow_back</span>

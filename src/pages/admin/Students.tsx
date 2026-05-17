@@ -112,7 +112,7 @@ export default function ManageStudents() {
 
   return (
     <AdminLayout>
-      <main className="flex-1 flex flex-col p-6 lg:p-8 w-full overflow-y-auto bg-surface min-h-[calc(100vh-64px)] md:min-h-screen mb-20 md:mb-0">
+      <main className="flex-1 min-h-0 flex flex-col p-6 lg:p-8 w-full overflow-y-auto bg-surface mb-20 md:mb-0">
         
         {/* Header content managed by layout generally, but we can add title if needed */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">

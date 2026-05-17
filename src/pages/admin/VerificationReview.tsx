@@ -72,7 +72,7 @@ export default function VerificationReview() {
 
   return (
     <AdminLayout>
-      <main className="flex-grow flex flex-col md:flex-row bg-surface-container-lowest h-[calc(100vh-4rem)] md:h-screen overflow-y-auto md:overflow-hidden pt-4 md:pt-0">
+      <main className="flex-1 min-h-0 flex flex-col md:flex-row bg-surface-container-lowest overflow-y-auto md:overflow-hidden pt-4 md:pt-0">
         <div className="flex-grow flex flex-col md:flex-row h-full pb-20 md:pb-0">
           
           <div className="flex-grow flex flex-col p-6 h-full overflow-y-auto gap-6 ">
