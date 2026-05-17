@@ -115,7 +115,7 @@ export default function ManageStudents() {
       <main className="flex-1 flex flex-col p-6 lg:p-8 w-full overflow-y-auto bg-surface min-h-[calc(100vh-64px)] md:min-h-screen mb-20 md:mb-0">
         
         {/* Header content managed by layout generally, but we can add title if needed */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 hidden md:flex">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
              <div className="text-xl md:text-2xl font-headline font-bold text-blue-900 dark:text-slate-100">Manage Students</div>
         </div>
 
@@ -173,9 +173,71 @@ export default function ManageStudents() {
             </div>
         </div>
 
-        {/* Data Table */}
+        {/* Data List for Mobile & Table for Desktop */}
         <div className="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-surface-variant overflow-hidden">
-             <div className="overflow-x-auto">
+             {/* Mobile Card View */}
+             <div className="md:hidden divide-y divide-surface-variant">
+                 {filteredStudents.map(student => (
+                     <div key={student.id} className="p-4 flex flex-col gap-3">
+                         <div className="flex justify-between items-start">
+                             <div className="flex items-center gap-3">
+                                 <div className="w-10 h-10 shrink-0 rounded-full bg-primary-fixed-dim text-on-primary-fixed flex items-center justify-center font-bold text-sm uppercase">
+                                     {student.name ? student.name.substring(0,2) : '?'}
+                                 </div>
+                                 <div className="flex flex-col">
+                                     <span className="text-on-surface font-medium">{student.name} <span className="text-sm font-normal text-on-surface-variant">({student.studentId})</span></span>
+                                     <span className="text-xs text-on-surface-variant">{student.email}</span>
+                                 </div>
+                             </div>
+                             <div>
+                                  {student.isVerified ? (
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-secondary-container text-on-secondary-container">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span>
+                                        Verified
+                                      </span>
+                                  ) : student.status === 'rejected' ? (
+                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-error-container text-on-error-container">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-on-error-container"></span>
+                                        Rejected
+                                    </span>
+                                  ) : (
+                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-on-tertiary-fixed-variant"></span>
+                                        Pending
+                                    </span>
+                                  )}
+                             </div>
+                         </div>
+                         <div className="text-xs text-on-surface-variant flex justify-between items-center bg-surface-container py-2 px-3 rounded text-sm">
+                             <span className="font-medium text-on-surface-variant">Prog:</span> {student.program || student.programme || 'N/A'}
+                         </div>
+                         <div className="flex justify-end gap-2 mt-1">
+                               {deletingId === student.id ? (
+                                    <div className="flex items-center justify-end gap-2 w-full">
+                                        <span className="text-xs text-error mr-auto">Delete?</span>
+                                        <button onClick={() => handleDelete(student.id)} className="px-3 py-1 bg-error text-white rounded text-xs font-medium focus:ring">Confirm</button>
+                                        <button onClick={() => setDeletingId(null)} className="px-3 py-1 bg-surface-variant rounded text-xs font-medium">Cancel</button>
+                                    </div>
+                               ) : (
+                                    <>
+                                        <button onClick={() => handleEditClick(student)} className="flex-1 py-1.5 bg-surface-variant text-on-surface rounded font-medium text-xs flex justify-center items-center gap-1 focus:ring">
+                                            <span className="material-symbols-outlined text-[16px]">edit</span> Edit
+                                        </button>
+                                        <button onClick={() => setDeletingId(student.id)} className="flex-1 py-1.5 bg-error-container text-error rounded font-medium text-xs flex justify-center items-center gap-1 focus:ring">
+                                            <span className="material-symbols-outlined text-[16px]">delete</span> Delete
+                                        </button>
+                                    </>
+                               )}
+                         </div>
+                     </div>
+                 ))}
+                 {filteredStudents.length === 0 && (
+                     <div className="p-6 text-center text-on-surface-variant text-sm">No students found matching your search.</div>
+                 )}
+             </div>
+
+             {/* Desktop Table View */}
+             <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[700px]">
                     <thead>
                         <tr className="bg-surface-container-low border-b border-surface-variant">

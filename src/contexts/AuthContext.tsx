@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       if (currentUser) {
         try {
-          if (currentUser.email === 'admin@zcas.edu.zm') {
+          if (currentUser.email === 'admin@zcas.edu.zm' || currentUser.email === 'sikalundumwinga@gmail.com') {
             setIsAdmin(true);
             setLoading(false);
             try {
