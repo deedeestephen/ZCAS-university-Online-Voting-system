@@ -51,12 +51,56 @@ This modern electoral platform is designed to revolutionize how student election
 
 ---
 
-## 🛠 Architecture and Technologies
+## 🏗 System Architecture Overview
 
-- **Frontend**: React (18+), Vite, Tailwind CSS, TypeScript
-- **Backend/API**: Node.js, Express
-- **Database & Authentication**: Firebase Auth, Cloud Firestore (with comprehensive Zero-Trust Security Rules)
-- **External Communications**: Secure internal APIS for transactional processing
+*   **Client (React + Vite)**: A responsive, mobile-first single-page application built with React and Tailwind CSS.
+*   **API Layer (Express)**: A fast, lightweight Node.js/Express backend handling external communications and sensitive operations.
+*   **Auth Layer (Firebase Auth)**: Secure, robust user authentication managing roles and session states.
+*   **Database (Firestore)**: A NoSQL document database providing real-time data synchronization.
+*   **Notification Service (SMS API)**: Event-driven SMS dispatch for OTPs, verifications, and election updates.
+
+```mermaid
+graph TD
+    A[Client (React)] -->|Auth Tokens| B(API Layer (Express))
+    A -->|Real-time listeners| C[(Firestore)]
+    B -->|Admin operations| C
+    A -->|Authentication| D[Firebase Auth]
+    B -->|Triggers| E[Notification Service]
+```
+
+## 🔐 Security Design
+
+Security is a first-class citizen in this election platform, ensuring absolute integrity:
+
+*   **How "One Student = One Vote" is Enforced**: Achieved through a combination of Firestore transactional writes, user state flags (`hasVoted`), and immutable receipt generation.
+*   **Firestore Security Rules**: A Zero-Trust model implemented via strict Attribute-Based Access Control (ABAC). Rules strictly isolate read/write operations based on authenticated UID, role assertions, and payload schema validation.
+*   **Server-Side Validation**: All critical state changes (e.g., verifying a student, starting an election) are validated on the server or via secure rules for schema integrity.
+*   **Anti-Tampering Measures**: Vote records are immutable. Once a ballot is cast, rules explicitly deny any `update` or `delete` actions from front-end clients, preventing altered records.
+
+## 📊 Data Model
+
+Our NoSQL schema is optimized for lightning-fast reads and secure real-time aggregations:
+
+*   **`students` Collection**: Stores basic student information, verification status (`pending`, `verified`, `rejected`), and eligibility flags.
+*   **`votes` Collection**: An immutable collection storing the selections, linked voter ID (used defensively to prevent double voting but anonymized in tallying), and server timestamps.
+*   **`candidates` Collection**: Contains candidate profiles, manifesto content, and real-time aggregated vote tallies.
+*   **`settings` (Election Schedule)**: Singleton documents defining global election states like start and end times dynamically.
+
+## 📸 Visual Proof
+
+> *Add your application screenshots or short GIFs here to show off the polished frontend.*
+
+*   **Admin Dashboard** - Showcasing real-time analytics, vote turnout distributions, and candidate standings.
+*   **Verification Queue** - Admin interface for reviewing student IDs and identity proofs.
+*   **Live Results Page** - The clean, accessible, mobile-responsive ballot interface.
+*   *(Optional: Add a short `.gif` of the voting flow here)*
+
+## ⚡ Engineering Highlights
+
+*   **Real-Time Vote Aggregation**: Leveraged Firestore listeners (`onSnapshot`) to deliver live, sub-second vote tally updates to the admin dashboard, completely eliminating traditional refresh cycles.
+*   **Role-Based Access Control (RBAC)**: Implemented a tiered security model (Super Admin, Verifier, Editor) to securely delegate tasks, controlled entirely by backend rule enforcement.
+*   **Secure Identity Verification Workflow**: Built a robust multi-step authentication process combining real-world identity checks before unlocking system functionality.
+*   **Scalable Event-Driven Architecture**: Used transactional operations and batched writes to ensure ultimate data consistency under high concurrent load during peak election hours.
 
 ---
 
@@ -88,16 +132,3 @@ Start the production server. This kicks off the backend which serves the built R
 ```bash
 npm start
 ```
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/944f6d034db44a10462d756f480f83904ed2b061/Screenshot%202026-05-14%20230649.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-14%20233820.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-14%20234700.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-14%20234845.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000423.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000515.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000624.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000652.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000903.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000929.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20001306.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/8c9e096d39a78f60cf72d15f472d240c163ad1d3/upload_identity_document.png)
-![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/8c9e096d39a78f60cf72d15f472d240c163ad1d3/otp_verification.png)

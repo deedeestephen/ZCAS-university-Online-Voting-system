@@ -44,12 +44,12 @@ export default function Login() {
             // Create the admin user doc so they have rules permissions
             try {
                await (await import('firebase/firestore')).setDoc((await import('firebase/firestore')).doc(db, 'adminUsers', userCred.user.uid), {
-                   email: loginEmail,
+                   email: loginEmail.toLowerCase(),
                    role: 'admin',
                    createdAt: (await import('firebase/firestore')).serverTimestamp()
                });
             } catch (e) {
-               console.error("Failed to write to adminUsers", e);
+               console.warn("Failed to write to adminUsers (safely ignored)", e);
             }
             toast.success('Admin account initialized successfully');
             navigate('/admin');

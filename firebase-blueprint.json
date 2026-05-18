@@ -66,9 +66,22 @@
         "role": { "type": "string" }
       },
       "required": ["email", "role"]
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "App-wide settings",
+      "type": "object",
+      "properties": {
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" }
+      }
     }
   },
   "firestore": {
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/settings" },
+      "description": "Application settings."
+    },
     "/students/{studentId}": {
       "schema": { "$ref": "#/entities/student" },
       "description": "Student records."

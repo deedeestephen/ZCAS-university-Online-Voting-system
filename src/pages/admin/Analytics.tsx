@@ -5,7 +5,10 @@ import { db } from '../../lib/firebase';
 import { handleFirestoreError, OperationType } from '../../lib/firebase';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
+import { useNavigate } from 'react-router-dom';
+
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalVotes, setTotalVotes] = useState(0);
   const [turnout, setTurnout] = useState(0);
@@ -184,6 +187,30 @@ export default function AdminDashboard() {
                 </div>
                 <p className="text-xs text-primary-fixed mt-2 text-right">Target: 80%</p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Manage Candidates Card */}
+            <div onClick={() => navigate('/admin/candidates')} className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/30 flex items-center justify-between cursor-pointer group hover:border-primary/50 transition-all duration-300">
+               <div>
+                  <h3 className="text-lg font-headline font-semibold text-on-surface group-hover:text-primary transition-colors">Manage Candidates</h3>
+                  <p className="text-sm text-on-surface-variant mt-1">Add, edit, or remove election candidates.</p>
+               </div>
+               <div className="w-12 h-12 rounded-full bg-primary-container text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined">person_add</span>
+               </div>
+            </div>
+
+            {/* Review Verifications Card */}
+            <div onClick={() => navigate('/admin/reviews')} className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-outline-variant/30 flex items-center justify-between cursor-pointer group hover:border-secondary/50 transition-all duration-300">
+               <div>
+                  <h3 className="text-lg font-headline font-semibold text-on-surface group-hover:text-secondary transition-colors">Verification Requests</h3>
+                  <p className="text-sm text-on-surface-variant mt-1">Approve or reject student IDs and selfies.</p>
+               </div>
+               <div className="w-12 h-12 rounded-full bg-secondary-container text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined">fact_check</span>
+               </div>
             </div>
           </div>
 

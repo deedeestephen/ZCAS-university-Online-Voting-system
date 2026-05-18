@@ -236,7 +236,7 @@ export default function VotingPage() {
           </div>
 
           <button disabled={submitting || !selectedCandidate} onClick={handleVote} className="px-6 py-2.5 rounded-lg bg-primary-container text-on-primary-container font-label text-sm font-bold hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 shadow-sm disabled:opacity-50">
-            {submitting ? 'Saving...' : (currentPosIndex === POSITIONS.length - 1 ? 'Submit Final Vote' : 'Next Position')}
+            {submitting ? (<><span className="material-symbols-outlined animate-spin text-lg">progress_activity</span> Saving...</>) : (currentPosIndex === POSITIONS.length - 1 ? 'Submit Final Vote' : 'Next Position')}
             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
         </div>

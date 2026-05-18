@@ -21,9 +21,12 @@ export default function VerificationReview() {
     return unsub;
   }, []);
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleDecision = async (status: string) => {
     const student = students[currentIndex];
     if(!student) return;
+    setSubmitting(true);
     
     try {
         await updateDoc(doc(db, 'students', student.id), {
@@ -56,6 +59,8 @@ export default function VerificationReview() {
     } catch (err: any) {
         toast.error('Error: ' + err.message);
         handleFirestoreError(err, OperationType.UPDATE, `students/${student.id}`);
+    } finally {
+        setSubmitting(false);
     }
   };
 
@@ -191,13 +196,11 @@ export default function VerificationReview() {
             </div>
 
             <div className="p-6 bg-surface-container flex flex-col gap-3">
-              <button disabled={!student} onClick={() => handleDecision('approved')} className="w-full py-3 px-4 bg-[#14B8A6] text-white rounded-lg font-bold shadow-md hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-                <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                Approve Verification
+              <button disabled={!student || submitting} onClick={() => handleDecision('approved')} className="w-full py-3 px-4 bg-[#14B8A6] text-white rounded-lg font-bold shadow-md hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                {submitting ? (<><span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Approving...</>) : (<><span className="material-symbols-outlined text-[20px]">check_circle</span> Approve Verification</>)}
               </button>
-              <button disabled={!student} onClick={() => handleDecision('rejected')} className="w-full py-3 px-4 bg-transparent border-2 border-error text-error rounded-lg font-bold hover:bg-error-container active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-                <span className="material-symbols-outlined text-[20px]">cancel</span>
-                Reject
+              <button disabled={!student || submitting} onClick={() => handleDecision('rejected')} className="w-full py-3 px-4 bg-transparent border-2 border-error text-error rounded-lg font-bold hover:bg-error-container active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                {submitting ? (<><span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Rejecting...</>) : (<><span className="material-symbols-outlined text-[20px]">cancel</span> Reject</>)}
               </button>
             </div>
           </aside>

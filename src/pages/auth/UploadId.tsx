@@ -260,7 +260,7 @@ export default function UploadId() {
         <div className="mt-4 flex flex-col gap-3">
           <button disabled={loading} onClick={handleUpload} className="w-full bg-primary text-on-primary font-label font-bold text-base py-3.5 rounded-lg active:scale-[0.98] hover:brightness-110 transition-all shadow-sm flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-xl">cloud_upload</span>
-            {loading ? 'Uploading...' : 'Upload ID Document'}
+            {loading ? (<><span className="material-symbols-outlined animate-spin text-lg">progress_activity</span> Uploading...</>) : 'Upload ID Document'}
           </button>
         </div>
       </div>

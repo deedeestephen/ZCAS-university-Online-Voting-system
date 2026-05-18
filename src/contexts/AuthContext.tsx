@@ -30,18 +30,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       if (currentUser) {
         try {
-          if (currentUser.email === 'admin@zcas.edu.zm' || currentUser.email === 'sikalundumwinga@gmail.com') {
+          if (currentUser.email && (currentUser.email.toLowerCase() === 'admin@zcas.edu.zm' || currentUser.email.toLowerCase() === 'sikalundumwinga@gmail.com')) {
             setIsAdmin(true);
             setLoading(false);
             try {
                const { setDoc, serverTimestamp } = await import('firebase/firestore');
                await setDoc(doc(db, 'adminUsers', currentUser.uid), {
-                   email: currentUser.email,
+                   email: currentUser.email.toLowerCase(),
                    role: 'admin',
                    createdAt: serverTimestamp()
                }, { merge: true });
             } catch (e) {
-               console.error("Could not write adminUsers doc", e);
+               console.warn("Could not write adminUsers doc (safely ignored)", e);
             }
             return;
           }

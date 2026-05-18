@@ -210,7 +210,7 @@ export default function OTPVerification() {
 
             <div className="flex flex-col gap-3 mt-8">
               <button disabled={loading} onClick={handleVerify} className="w-full bg-primary-container text-on-primary font-label font-bold text-base py-3.5 px-6 rounded-xl hover:brightness-110 active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 group">
-                {loading ? 'Verifying...' : 'Verify Identity'}
+                {loading ? (<><span className="material-symbols-outlined animate-spin text-lg">progress_activity</span> Verifying...</>) : 'Verify Identity'}
                 <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </button>
               

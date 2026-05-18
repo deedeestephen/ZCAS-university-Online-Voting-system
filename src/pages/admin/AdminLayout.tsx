@@ -82,7 +82,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
-        <header className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md text-blue-900 dark:text-blue-400 font-public-sans antialiased docked full-width top-0 sticky z-40 border-b border-slate-200 dark:border-slate-800 shadow-sm flex justify-between items-center px-4 h-16 w-full">
+        <header className="bg-white/90 shrink-0 dark:bg-slate-900/90 backdrop-blur-md text-blue-900 dark:text-blue-400 font-public-sans antialiased docked full-width top-0 sticky z-40 border-b border-slate-200 dark:border-slate-800 shadow-sm flex justify-between items-center px-4 h-16 w-full">
             <div className="flex items-center gap-2">
             <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors mr-2 flex items-center justify-center">
               <span className="material-symbols-outlined text-2xl">menu</span>

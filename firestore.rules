@@ -12,8 +12,10 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         request.auth.uid == 'THPN2wjznufJIaoWsmAf8dlvrCH3' ||
-        ('email' in request.auth.token && request.auth.token.email == 'admin@zcas.edu.zm') ||
-        ('email' in request.auth.token && request.auth.token.email == 'sikalundumwinga@gmail.com') ||
+        (request.auth.token.email != null && (
+          request.auth.token.email.lower() == 'admin@zcas.edu.zm' || 
+          request.auth.token.email.lower() == 'sikalundumwinga@gmail.com'
+        )) ||
         exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
       );
     }
@@ -33,7 +35,13 @@ service cloud.firestore {
     match /adminUsers/{uid} {
       allow get: if isSignedIn();
       allow list: if isAdmin();
-      allow create, update: if request.auth != null && (request.auth.uid == 'THPN2wjznufJIaoWsmAf8dlvrCH3' || ('email' in request.auth.token && request.auth.token.email == 'admin@zcas.edu.zm') || ('email' in request.auth.token && request.auth.token.email == 'sikalundumwinga@gmail.com')) || isAdmin();
+      allow create, update: if request.auth != null && request.auth.uid == uid && (
+        request.auth.uid == 'THPN2wjznufJIaoWsmAf8dlvrCH3' || 
+        (request.auth.token.email != null && (
+          request.auth.token.email.lower() == 'admin@zcas.edu.zm' || 
+          request.auth.token.email.lower() == 'sikalundumwinga@gmail.com'
+        ))
+      ) || isAdmin();
       allow delete: if false;
     }
 

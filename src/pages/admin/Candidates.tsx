@@ -105,7 +105,7 @@ export default function ManageCandidates() {
 
   return (
     <AdminLayout>
-      <main className="flex-1 min-h-0 p-4 md:p-8 lg:p-10 w-full overflow-y-auto bg-surface-container-low mb-20 md:mb-0">
+      <main className="flex-1 min-h-0 p-4 md:p-8 lg:p-10 w-full overflow-y-auto bg-surface-container-low pb-24 md:pb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-headline font-bold text-on-surface tracking-tight mb-1">Manage Candidates</h1>

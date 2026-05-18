@@ -177,7 +177,7 @@ export default function SelfieCapture() {
                </button>
                <button disabled={loading} onClick={handleSubmit} className="flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-label font-bold text-on-primary bg-primary hover:bg-primary-container shadow-sm transition-all active:scale-[0.98]">
                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span>
-                 {loading ? 'Submitting...' : 'Submit'}
+                 {loading ? (<><span className="material-symbols-outlined animate-spin text-lg">progress_activity</span> Submitting...</>) : 'Submit'}
                </button>
              </>
           ) : (
