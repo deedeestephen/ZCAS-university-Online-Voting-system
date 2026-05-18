@@ -89,3 +89,14 @@ Start the production server. This kicks off the backend which serves the built R
 npm start
 ```
 ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/944f6d034db44a10462d756f480f83904ed2b061/Screenshot%202026-05-14%20230649.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-14%20233820.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-14%20234700.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-14%20234845.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000423.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000515.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000624.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000652.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000903.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000929.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20001306.png)
+
