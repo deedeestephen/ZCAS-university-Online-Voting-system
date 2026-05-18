@@ -87,13 +87,33 @@ Our NoSQL schema is optimized for lightning-fast reads and secure real-time aggr
 *   **`settings` (Election Schedule)**: Singleton documents defining global election states like start and end times dynamically.
 
 ## 📸 Visual Proof
-
-> *Add your application screenshots or short GIFs here to show off the polished frontend.*
+ADMIN DASHBOARD
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20200300.png)
+> STUDENT MANGEMENT/ADMIN
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20200546.png)
+> IDENTITY VERIFICATION
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20201137.png)
+> BIOMETRIC VERIFICATION
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20201233.png)
+> STUDENT SUBMISSION OF IDENTITY AND BIOMETRIC DOCUMENTS TO ADMIN
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20201257.png)
+> ADMIN IDENTITY APROVAL PAGE
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20201407.png)
+> STUDENT DASHBOARD
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20201637.png)
+> ADMIN STUDENT MANAGEMENT
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20200546.png)
+> ADMIN SETTING SCHEDULING OF ELECTION
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/Screenshot%202026-05-18%20195801.png)
+> STUDENT VERIFICATION STATUS
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/verification_status.png)
+> VOTE CONFIRMATION
+> ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/bdefcd15b5e13b27dc6e4b1fecce45083ba98e51/vote_confirmation.png)
 
 *   **Admin Dashboard** - Showcasing real-time analytics, vote turnout distributions, and candidate standings.
 *   **Verification Queue** - Admin interface for reviewing student IDs and identity proofs.
 *   **Live Results Page** - The clean, accessible, mobile-responsive ballot interface.
-*   *(Optional: Add a short `.gif` of the voting flow here)*
+  
 
 ## ⚡ Engineering Highlights
 
