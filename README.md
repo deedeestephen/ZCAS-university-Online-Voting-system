@@ -99,4 +99,5 @@ npm start
 ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000903.png)
 ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20000929.png)
 ![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/df7f69a9acbe039a1737f4ad2ee6089ee8cf8769/Screenshot%202026-05-15%20001306.png)
-
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/8c9e096d39a78f60cf72d15f472d240c163ad1d3/upload_identity_document.png)
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/8c9e096d39a78f60cf72d15f472d240c163ad1d3/otp_verification.png)
