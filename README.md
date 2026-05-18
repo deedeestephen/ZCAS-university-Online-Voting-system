@@ -88,3 +88,4 @@ Start the production server. This kicks off the backend which serves the built R
 ```bash
 npm start
 ```
+![image alt](https://github.com/deedeestephen/ZCAS-university-Online-Voting-system/blob/944f6d034db44a10462d756f480f83904ed2b061/Screenshot%202026-05-14%20230649.png)
